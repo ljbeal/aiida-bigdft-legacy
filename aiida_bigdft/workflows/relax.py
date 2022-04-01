@@ -197,7 +197,7 @@ class BigDFTRelaxWorkChain(WorkChain):
             array_forces = ArrayData()
             array_forces.set_array('forces', numpy.array(forces))
             self.out('forces', array_forces.store())
-            logl = YamlIO.load(sf)
+            logl = YamlIO.load(stream=sf, archive=None)
             if logl is None:
                 self.report(
                     'Relaxation failed - no output position file found')
