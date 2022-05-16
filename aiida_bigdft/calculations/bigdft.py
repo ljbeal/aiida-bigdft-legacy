@@ -13,7 +13,7 @@ import os
 from aiida import orm
 from aiida.common import datastructures, exceptions
 from aiida.engine import CalcJob
-from aiida.orm.nodes.data import List, SinglefileData, Float, Dict
+from aiida.orm.nodes.data import List, SinglefileData, Float, Dict, Bool
 from aiida.plugins import DataFactory
 
 from BigDFT import Calculators as BigDFT_calc
@@ -22,7 +22,29 @@ from BigDFT import Inputfiles as BigDFT_files
 BigDFTParameters = DataFactory('bigdft')
 BigDFTLogfile = DataFactory('bigdft_logfile')
 
+from aiida_bigdft.calculations.preprocess import treat_input
+from aiida_bigdft.utils.debug import format_iterable
+
 # just override SystemCalculator constructor to avoid checking BIGDFT_ROOT variable
+
+
+def create_debug_data(obj):
+
+    name = getattr(obj, '__name__', None)
+    if name is None:
+        name = getattr(obj, '__class__', None)
+
+    dbg = [f'dir data for object {name}:']
+    dbg.insert(0, '-'*len(dbg[0]))
+    dbg.append('-'*len(dbg[0]))
+
+    for k in dir(obj):
+        v = str(getattr(obj, k, None))
+        dbg.append(f'{k}: {v}')
+
+    dbg.append('-'*len(dbg[0]))
+    return '\n'.join(dbg) + '\n'
+
 
 
 class PluginSystemCalculator(BigDFT_calc.SystemCalculator):
@@ -107,8 +129,20 @@ class BigDFTCalculation(CalcJob):
 #            raise exceptions.InputValidationError("Only one of structure or structurefile must be set")
 
         # somehow aiida sends back unicode strings here
+        # dbg = 'debug data for presubmit\n\n'  # TODO(lbeal) kill the debug lines
         dico = BigDFT_files.Inputfile()
-        dico.update(self.inputs.parameters.dict)
+        gpu_accel = self.inputs.metadata.options.resources.pop('gpu_accel', False)
+
+        params_dict = treat_input(self.inputs.parameters.dict,
+                                  self.inputs.structure)
+
+        dico.update(params_dict)
+
+        if gpu_accel:
+            try:
+                dico['perf'].update({'accel': 'OCLGPU'})
+            except KeyError:
+                dico['perf'] = {'accel': 'OCLGPU'}
 
         bigdft_calc = PluginSystemCalculator()
         local_copy_list = []
@@ -194,4 +228,5 @@ class BigDFTCalculation(CalcJob):
                                   "final_posinp.xyz",
                                   ["./debug/bigdft-err*", ".", 2]]
         calcinfo.retrieve_list.extend(self.inputs.extra_retrieved_files)
+
         return calcinfo
