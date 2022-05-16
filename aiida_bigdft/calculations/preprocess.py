@@ -25,7 +25,7 @@ def treat_input(inp_dict: dict,
     protocols = BigDftCommonRelaxInputGenerator._protocols
 
     acwf_params = inp_dict.pop('acwf_params', {})  # remove the acwf params
-    return inp_dict
+    return inp_dict  # passthrough for now
 
     root = os.path.split(aiida_bigdft.__file__)[0]
     psppath = os.path.join(root, 'PyBigDFT/BigDFT/scripts/psppar')

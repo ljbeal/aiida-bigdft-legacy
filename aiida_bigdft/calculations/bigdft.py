@@ -23,6 +23,7 @@ BigDFTParameters = DataFactory('bigdft')
 BigDFTLogfile = DataFactory('bigdft_logfile')
 
 from aiida_bigdft.calculations.preprocess import treat_input
+# from aiida_bigdft.utils.debug import format_iterable
 
 # just override SystemCalculator constructor to avoid checking BIGDFT_ROOT variable
 
@@ -128,20 +129,12 @@ class BigDFTCalculation(CalcJob):
 #            raise exceptions.InputValidationError("Only one of structure or structurefile must be set")
 
         # somehow aiida sends back unicode strings here
-        # dbg = 'debug data for presubmit\n\n'  # TODO(lbeal) kill the debug lines
         dico = BigDFT_files.Inputfile()
-        gpu_accel = self.inputs.metadata.options.resources.pop('gpu_accel', False)
 
         params_dict = treat_input(self.inputs.parameters.dict,
                                   self.inputs.structure)
 
         dico.update(params_dict)
-
-        if gpu_accel:
-            try:
-                dico['perf'].update({'accel': 'OCLGPU'})
-            except KeyError:
-                dico['perf'] = {'accel': 'OCLGPU'}
 
         bigdft_calc = PluginSystemCalculator()
         local_copy_list = []
