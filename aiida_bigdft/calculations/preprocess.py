@@ -1,4 +1,3 @@
-from aiida_bigdft.utils.debug import format_iterable
 from aiida.orm.nodes.data import structure
 
 from aiida_common_workflows.workflows.relax.bigdft.generator import BigDftCommonRelaxInputGenerator

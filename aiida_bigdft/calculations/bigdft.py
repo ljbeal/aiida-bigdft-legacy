@@ -23,7 +23,6 @@ BigDFTParameters = DataFactory('bigdft')
 BigDFTLogfile = DataFactory('bigdft_logfile')
 
 from aiida_bigdft.calculations.preprocess import treat_input
-from aiida_bigdft.utils.debug import format_iterable
 
 # just override SystemCalculator constructor to avoid checking BIGDFT_ROOT variable
 
