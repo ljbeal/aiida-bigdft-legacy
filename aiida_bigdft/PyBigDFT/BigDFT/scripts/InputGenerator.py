@@ -181,7 +181,7 @@ def transform_to_orthorombic(dico):
           dico["beta"] == 90):
         btype = "orthorombic"
     elif (dico["a"] == dico["b"] and dico["a"] == dico["c"] and
-          dico["alpha"] == dico["beta"]and dico["alpha"] == dico["gamma"]):
+          dico["alpha"] == dico["beta"] and dico["alpha"] == dico["gamma"]):
         btype = "rhombohedral"
     # Transform to orthorombic when possible.
     if btype == "hexagonal":
@@ -220,6 +220,32 @@ def transform_to_orthorombic(dico):
               (1., 0., 0.),
               (0., 1., 0.),
               (0., 0., 1.))
+        nat = dico["nat"]
+        dico["nat"] *= len(dd)
+        for i in range(nat):
+            for (j, (du, dv, dw)) in enumerate(dd):
+                u, v, w = dico[str(i+1)]
+                u += du
+                v += dv
+                w += dw
+                a = P[0][0] * u + P[0][1] * v + P[0][2] * w
+                b = P[1][0] * u + P[1][1] * v + P[1][2] * w
+                c = P[2][0] * u + P[2][1] * v + P[2][2] * w
+                dico[str(j * nat + i + 1)] = (a, b, c)
+                dico["alpha"] = 90.0
+                dico["beta"] = 90.0
+                dico["gamma"] = 90.0
+    elif btype == "rhombohedral" and int(round(dico["alpha"])) == 109:
+        safe_print(f'orthogonalising {dico["alpha"]} degree BCC')
+        a = dico["a"]
+        dico["a"] = a * 2 / math.sqrt(3.)
+        dico["b"] = a * 2 / math.sqrt(3.)
+        dico["c"] = a * 2 / math.sqrt(3.)
+        P = ((0.,  0.5, 0.5),
+             (0.5, 0.,  0.5),
+             (0.5, 0.5, 0.))
+        dd = ((0., 0., 0.),
+              (0.5, 0.5, 0.5))
         nat = dico["nat"]
         dico["nat"] *= len(dd)
         for i in range(nat):
