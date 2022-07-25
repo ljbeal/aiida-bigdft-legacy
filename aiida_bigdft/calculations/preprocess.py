@@ -27,6 +27,8 @@ def treat_input(inp_dict: dict,
     acwf_params = inp_dict.pop('acwf_params', {})  # remove the acwf params
     return inp_dict  # passthrough for now
 
+    hgrid_orig = inp_dict['dft'].get('hgrids', None)
+
     root = os.path.split(aiida_bigdft.__file__)[0]
     psppath = os.path.join(root, 'PyBigDFT/BigDFT/scripts/psppar')
     atoms = structure.get_symbols_set()
@@ -40,23 +42,8 @@ def treat_input(inp_dict: dict,
         hgrids[atom] = round(this*1.1, 2)
     hgrid_min = min(hgrids.values())
 
-    now = datetime.now()
-    header = f"this call comes from within the prepro, written {now}\n"
-    with open('/home/test/acwf/debug-aiida-bigdft-plugin.txt', 'a') as o:
-        o.write('\n' + '-' * len(header) + '\n')
-        o.write(header)
-        o.write(f'unique list of atoms: {atoms}\n')
-        o.write(f'filepath: {psppath}\n')
-        o.write('hgrid data:\n')
-        for a, h in hgrids.items():
-            o.write(f'{a}: {h}\n')
-
-        o.write(f'\nthe original hgrid (set by protocol) is {protocol_hgrid}\n')
-        o.write(f'the current hgrid (set by scaling) is {scaled_hgrid}\n')
-        o.write(f'=> scaling value for this run is {scaling_value}\n')
-
-        o.write(f'==> hgrid will be set to {hgrid_new}\n')
-
     inp_dict['dft']['hgrids'] = hgrid_min
+
+    print(f'hgrid updated from {hgrid_orig} to {hgrid_min}')
 
     return inp_dict
