@@ -131,8 +131,16 @@ class BigDFTCalculation(CalcJob):
         # somehow aiida sends back unicode strings here
         dico = BigDFT_files.Inputfile()
 
+        passed_env = self.inputs.metadata["options"]\
+            .get("environment_variables", {})
+        if 'auto_hgrid' in passed_env:
+            auto_hgrid = passed_env['auto_hgrid'].lower() != 'false'
+        else:
+            auto_hgrid = os.environ.get('auto_hgrid', False)
+
         params_dict = treat_input(self.inputs.parameters.dict,
-                                  self.inputs.structure)
+                                  self.inputs.structure,
+                                  auto_hgrid)
 
         dico.update(params_dict)
 

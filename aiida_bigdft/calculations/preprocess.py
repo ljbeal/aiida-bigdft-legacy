@@ -5,9 +5,11 @@ from aiida_common_workflows.workflows.relax.bigdft.generator import BigDftCommon
 from datetime import datetime
 import aiida_bigdft
 import os
+import yaml
 
 def treat_input(inp_dict: dict,
-                structure: structure) -> dict:
+                structure: structure,
+                auto_hgrid: bool = False) -> dict:
     """
 
     Args:
@@ -15,17 +17,19 @@ def treat_input(inp_dict: dict,
             BigDFT input dictionary, to be treated before packaging
         structure:
             aiida.orm.structure data containing the system
+        auto_hgrid (bool):
+            automatically scale the hgrid
 
     Returns:
         dict: treated BigDFT input dictionary
 
     """
 
+    if not auto_hgrid:
+        return inp_dict
+
     # extract predefined protocols
     protocols = BigDftCommonRelaxInputGenerator._protocols
-
-    acwf_params = inp_dict.pop('acwf_params', {})  # remove the acwf params
-    return inp_dict  # passthrough for now
 
     hgrid_orig = inp_dict['dft'].get('hgrids', None)
 
@@ -37,13 +41,11 @@ def treat_input(inp_dict: dict,
         # set hgrids per atom
         apath = os.path.join(psppath, f'psppar.{atom}')
         with open(apath, 'r') as o:
-            this = float(o.readlines()[-1].split('     ')[0].strip())
+            rcore = float(o.readlines()[-1].split('     ')[0].strip())
 
-        hgrids[atom] = round(this*1.1, 2)
+        hgrids[atom] = round(rcore * 1.1, 2)
     hgrid_min = min(hgrids.values())
 
-    inp_dict['dft']['hgrids'] = hgrid_min
-
-    print(f'hgrid updated from {hgrid_orig} to {hgrid_min}')
+    inp_dict['dft']['hgrids'] = [hgrid_min] * 3
 
     return inp_dict
