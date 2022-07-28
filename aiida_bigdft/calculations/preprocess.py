@@ -41,7 +41,14 @@ def treat_input(inp_dict: dict,
         # set hgrids per atom
         apath = os.path.join(psppath, f'psppar.{atom}')
         with open(apath, 'r') as o:
-            rcore = float(o.readlines()[-1].split('     ')[0].strip())
+            for line in o.readlines():
+                rcore = -1
+                if 'rcore' in line:
+                    rcore = float(line.split('     ')[0].strip())
+
+            if rcore == -1:
+                # no value available for this element, fall through
+                return inp_dict
 
         hgrids[atom] = round(rcore * 1.1, 2)
     hgrid_min = min(hgrids.values())

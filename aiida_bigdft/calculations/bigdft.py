@@ -143,7 +143,6 @@ class BigDFTCalculation(CalcJob):
                                   auto_hgrid)
 
         dico.update(params_dict)
-
         bigdft_calc = PluginSystemCalculator()
         local_copy_list = []
         # if the structure is not already inside input dict
