@@ -1,6 +1,11 @@
 from aiida.orm.nodes.data import structure
 
-from aiida_common_workflows.workflows.relax.bigdft.generator import BigDftCommonRelaxInputGenerator
+try:
+    from aiida_common_workflows.workflows.relax.bigdft.generator import BigDftCommonRelaxInputGenerator
+    cwf = False
+except ImportError:
+    BigDftCommonRelaxInputGenerator = None
+    cwf = False
 
 from datetime import datetime
 import aiida_bigdft
@@ -29,7 +34,7 @@ def treat_input(inp_dict: dict,
         return inp_dict
 
     # extract predefined protocols
-    protocols = BigDftCommonRelaxInputGenerator._protocols
+    # protocols = BigDftCommonRelaxInputGenerator._protocols
 
     hgrid_orig = inp_dict['dft'].get('hgrids', None)
 
