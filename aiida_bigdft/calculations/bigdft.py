@@ -28,6 +28,7 @@ from aiida_bigdft.calculations.preprocess import treat_input
 BigDFTParameters = DataFactory('bigdft')
 BigDFTLogfile = DataFactory('bigdft_logfile')
 
+
 def create_debug_data(obj):
 
     name = getattr(obj, '__name__', None)
@@ -220,7 +221,8 @@ class BigDFTCalculation(CalcJob):
         if "jobname" in self.inputs.metadata.options:
             codeinfo.cmdline_params = ["--name=" +
                                        self.inputs.metadata.options.jobname]
-        #local_copy_list = []
+
+        # local_copy_list = []
         # Prepare a `CalcInfo` to be returned to the engine
         calcinfo = datastructures.CalcInfo()
         calcinfo.codes_info = [codeinfo]
