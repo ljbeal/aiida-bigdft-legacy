@@ -19,14 +19,14 @@ from aiida.plugins import DataFactory
 from BigDFT import Calculators as BigDFT_calc
 from BigDFT import InputActions as BigDFT_input
 from BigDFT import Inputfiles as BigDFT_files
-BigDFTParameters = DataFactory('bigdft')
-BigDFTLogfile = DataFactory('bigdft_logfile')
 
 from aiida_bigdft.calculations.preprocess import treat_input
 # from aiida_bigdft.utils.debug import format_iterable
 
 # just override SystemCalculator constructor to avoid checking BIGDFT_ROOT variable
 
+BigDFTParameters = DataFactory('bigdft')
+BigDFTLogfile = DataFactory('bigdft_logfile')
 
 def create_debug_data(obj):
 
@@ -122,10 +122,10 @@ class BigDFTCalculation(CalcJob):
         """
         # check that either structure or structurefile are set
         # if both are set, fail.
-#        if self.inputs.structurefile is None and self.inputs.structure is None:
-#            raise exceptions.InputValidationError("either structure or structurefile must be set")
-#        if self.inputs.structurefile is not None and self.inputs.structure is not None:
-#            raise exceptions.InputValidationError("Only one of structure or structurefile must be set")
+        # if self.inputs.structurefile is None and self.inputs.structure is None:
+        #   raise exceptions.InputValidationError("either structure or structurefile must be set")
+        # if self.inputs.structurefile is not None and self.inputs.structure is not None:
+        #   raise exceptions.InputValidationError("Only one of structure or structurefile must be set")
 
         # somehow aiida sends back unicode strings here
         dico = BigDFT_files.Inputfile()
@@ -158,7 +158,9 @@ class BigDFTCalculation(CalcJob):
                 # set bcs at the correct format (periodic only?)
                 if self.inputs.structure.pbc == (True, True, True):
                     filestring = posinp_string.split(b'\n')
-                    line = "periodic " + str(self.inputs.structure.cell_lengths[0]) + " " + str(self.inputs.structure.cell_lengths[1]) + " " + str(self.inputs.structure.cell_lengths[2])
+                    line = "periodic " + str(self.inputs.structure.cell_lengths[0]) + " "\
+                           + str(self.inputs.structure.cell_lengths[1]) + " "\
+                           + str(self.inputs.structure.cell_lengths[2])
                     filestring[1] = line.encode()
                     posinp_string = b'\n'.join(filestring)
 
@@ -176,8 +178,8 @@ class BigDFTCalculation(CalcJob):
             posinp_filedata = SinglefileData(
                 file=os.path.abspath(posinp_filename)).store()
 
-    #        BigDFT_input.set_atomic_positions(dico, posinp_filename)
-    #        bigdft_calc._run_options(posinp={})
+            # BigDFT_input.set_atomic_positions(dico, posinp_filename)
+            # bigdft_calc._run_options(posinp={})
 
             local_copy_list = [
                 (posinp_filedata.uuid, posinp_filedata.filename, posinp_filedata.filename)]
@@ -213,7 +215,7 @@ class BigDFTCalculation(CalcJob):
             outfile = "log-" + self.inputs.metadata.options.jobname + ".yaml"
             timefile = "time-" + self.inputs.metadata.options.jobname + ".yaml"
 
-#        codeinfo.stdout_name = outfile
+        # codeinfo.stdout_name = outfile
         codeinfo.withmpi = self.inputs.metadata.options.withmpi
         if "jobname" in self.inputs.metadata.options:
             codeinfo.cmdline_params = ["--name=" +
