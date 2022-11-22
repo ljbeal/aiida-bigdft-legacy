@@ -46,7 +46,6 @@ def create_debug_data(obj):
     return '\n'.join(dbg) + '\n'
 
 
-
 class PluginSystemCalculator(BigDFT_calc.SystemCalculator):
     def __init__(self,
                  omp=os.environ.get('OMP_NUM_THREADS', '1'),
@@ -143,6 +142,9 @@ class BigDFTCalculation(CalcJob):
                                   auto_hgrid)
 
         dico.update(params_dict)
+
+        print(dico)
+
         bigdft_calc = PluginSystemCalculator()
         local_copy_list = []
         # if the structure is not already inside input dict
@@ -164,8 +166,11 @@ class BigDFTCalculation(CalcJob):
                     posinp_filename = self._POSINP_FILE_NAME
                 else:
                     posinp_filename = self.inputs.metadata.options.jobname + ".xyz"
-    #            bigdft_calc.update_global_options(units="angstroem")
-                with open(posinp_filename, 'w+') as posfile:
+                # bigdft_calc.update_global_options(units="angstroem")
+
+                # write posinp, open file in correct format
+                fmode = 'w+' if isinstance(posinp_string, str) else 'wb+'
+                with open(posinp_filename, fmode) as posfile:
                     posfile.write(posinp_string)
 
             posinp_filedata = SinglefileData(
