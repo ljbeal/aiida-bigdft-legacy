@@ -54,13 +54,13 @@ def get_computer(name=LOCALHOST_NAME, workdir=None):
     from aiida.common.exceptions import NotExistent
 
     try:
-        computer = Computer.objects.get(name=name)
+        computer = Computer.objects.get(label=name)
     except NotExistent:
         if workdir is None:
             workdir = tempfile.mkdtemp()
 
         computer = Computer(
-            name=name,
+            label=name,
             description='localhost computer set up by aiida_bigdft tests',
             hostname=name,
             workdir=workdir,
@@ -95,7 +95,7 @@ def get_code(entry_point, computer):
 
     try:
         code = Code.get_from_string('{}@{}'.format(executable,
-                                                   computer.get_name()))
+                                                   computer.label))
     except NotExistent:
         path = get_path_to_executable(executable)
         code = Code(
