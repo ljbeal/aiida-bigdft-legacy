@@ -12,6 +12,7 @@ import aiida_bigdft
 import os
 import yaml
 
+
 def treat_input(inp_dict: dict,
                 structure: structure,
                 auto_hgrid: bool = False) -> dict:

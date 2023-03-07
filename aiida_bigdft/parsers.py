@@ -106,7 +106,6 @@ class BigDFTParser(Parser):
                 tmp.write(self.retrieved.get_object_content(output_filename))
                 output = BigDFTLogfile(tmp.name)
 
-
         except ValueError:
             self.logger.error("Impossible to parse LogFile".
                               format(output_filename))
