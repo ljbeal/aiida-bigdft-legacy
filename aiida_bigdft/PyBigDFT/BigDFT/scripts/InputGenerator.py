@@ -189,10 +189,10 @@ def transform_to_orthorombic(dico):
         b = dico[lb]
         # - hexagonal case.
         alpha = float(dico[ang]) * math.pi / 180.
-        dico[la] = math.sqrt((a+b*math.cos(alpha)) **
-                             2 + (b*math.sin(alpha))**2)
-        dico[lb] = math.sqrt((a-b*math.cos(alpha)) **
-                             2 + (b*math.sin(alpha))**2)
+        dico[la] = math.sqrt((a+b*math.cos(alpha)) ** 2
+                             + (b*math.sin(alpha)) ** 2)
+        dico[lb] = math.sqrt((a-b*math.cos(alpha)) ** 2
+                             + (b*math.sin(alpha)) ** 2)
         for i in range(dico["nat"]):
             u, v, w = dico[str(i+1)]
             a = P[0][0] * u + P[0][1] * v + P[0][2] * w
@@ -209,6 +209,7 @@ def transform_to_orthorombic(dico):
         dico["nat"] *= 2
         dico[ang] = "90"
     elif btype == "rhombohedral" and dico["alpha"] == 60:
+        # FCC
         a = dico["a"]
         dico["a"] = a * math.sqrt(2.)
         dico["b"] = a * math.sqrt(2.)
@@ -232,9 +233,11 @@ def transform_to_orthorombic(dico):
                 b = P[1][0] * u + P[1][1] * v + P[1][2] * w
                 c = P[2][0] * u + P[2][1] * v + P[2][2] * w
                 dico[str(j * nat + i + 1)] = (a, b, c)
-                dico["alpha"] = 90.0
-                dico["beta"] = 90.0
-                dico["gamma"] = 90.0
+        dico["alpha"] = 90.0
+        dico["beta"] = 90.0
+        dico["gamma"] = 90.0
+
+        print(dico)
     elif btype == "rhombohedral" and int(round(dico["alpha"])) == 109:
         safe_print(f'orthogonalising {dico["alpha"]} degree BCC')
         a = dico["a"]
@@ -258,9 +261,11 @@ def transform_to_orthorombic(dico):
                 b = P[1][0] * u + P[1][1] * v + P[1][2] * w
                 c = P[2][0] * u + P[2][1] * v + P[2][2] * w
                 dico[str(j * nat + i + 1)] = (a, b, c)
-                dico["alpha"] = 90.0
-                dico["beta"] = 90.0
-                dico["gamma"] = 90.0
+        dico["alpha"] = 90.0
+        dico["beta"] = 90.0
+        dico["gamma"] = 90.0
+
+        print(dico)
     elif btype != "orthorombic":
         safe_print("to be treated", dico["name"], dico["alpha"],
                    dico["beta"], dico["gamma"], dico["a"], dico["b"],

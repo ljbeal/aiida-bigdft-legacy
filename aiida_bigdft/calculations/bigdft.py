@@ -144,7 +144,7 @@ class BigDFTCalculation(CalcJob):
 
         dico.update(params_dict)
 
-        print(dico)
+        print('calculation dico,', dico)
 
         bigdft_calc = PluginSystemCalculator()
         local_copy_list = []
@@ -193,7 +193,6 @@ class BigDFTCalculation(CalcJob):
                 local_copy_list.append(
                     (pseudo_filedata.uuid, pseudo_filedata.filename, pseudo_filedata.filename))
         # generate yaml input file from dict and whatever
-
         if "jobname" in self.inputs.metadata.options:
             bigdft_calc.update_global_options(
                 name=self.inputs.metadata.options.jobname)
